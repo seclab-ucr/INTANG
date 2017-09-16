@@ -3,25 +3,21 @@ FAQ
 ==================
 What can I do with INTANG?
 ------------------------------
-With INTANG, your HTTP connections are protected from censor's monitoring. For some reasons, GFW will block the communication between a client and a server for 90 seconds after a sensitive keyword is seen in the HTTP request. You will see in the browser a "Connection has been reset" page once that happens. By using the tool, you can bypass such attacks from GFW. 
+With INTANG, your HTTP connections are protected from censor's monitoring. For some reasons, GFW will block the communication between a client and a server for 90 seconds after a sensitive keyword is seen in the HTTP request. You will see in the browser a "Connection has been reset" page once that happens. By using the tool, you can bypass such kind of attacks from GFW. 
 
-Also, you can visit some blocked websites, e.g. facebook.com. Since their servers are not blocked by IP blocking, but only DNS poisoning, our tool can establish a connection to a unpolluted DNS resolver using TCP. 
+Also, you can visit some blocked websites, e.g. wordpress.com, dropbox.com, etc. Since their servers are not blocked by IP blocking, but only DNS poisoning, our tool can establish a connection to a unpolluted DNS resolver using TCP. 
 
 Why can't I access to Internet after using INTANG?
 ------------------------------
 Since INTANG intercepts HTTP and DNS packets by adding iptables rules, if it is terminated abnormally, it may not be able to remove the iptables rules. If this happens, you will need to manually remove those rules (a simple way is using `iptables -F`, if no other existing rules).
 
-Why some websites become very slow or even can't be opened after using INTANG?
+Why some websites become very slow or even can't be accessed after using INTANG?
 ------------------------------
-Our censorship evasion strategies are not perfect. They may accidentally close the normal connections on server-side. We are going to develop a more clever algorithm to choose the best strategy for each website you visit. But for now, we only use a weighted random selector to choose strategy. If you cannot visit a website, try to refresh the website with Ctrl-F5, it may use another strategy which works for the website. 
+Our censorship evasion strategies are not perfect. They may accidentally terminate the normal connections on server-side. We are working on finding more effective discrepancies to reduce this side-effect. By now, INTANG has an automatic strategy selection algorithm, which can switch between a bunch of strategies. In case one strategy fails often, it will turn to alternative strategies. Different strategies work better for different servers, so it may eventually find and save the best strategy for each server.
 
-Also, INTANG chooses a random DNS resolver when it starts up, if you feel the DNS resolver is slow, you can change it in dns.c. By default, INTANG will only use the TCP DNS resolver for blocked websites, but you can also change it in main.c.
+Also, INTANG chooses a random DNS resolver when it starts up, if you feel the DNS resolver is slow, you can use other unpolluted DNS resolvers by modifying dns.c. By default, INTANG only delegate DNS resolving for websites in our list. But you may also choose to do DNS delegation for all websites or turn it off completely by modifying main.c. 
 
 I'm still experiencing "Connection has been reset".
 ------------------------------
-If you are visiting a blocked website, or using sensitive keywords in HTTP request, it looks like the evasion strategy is not working. Possibly INTANG used "dummy" strategy (which means no strategy) for that connection, you can adjust the weight in strategy.c to disable "dummy" strategy. Or your browser is started before INTANG, so it may have established connections that are not protected by INTANG. Then we recommend you to restart the browser (also restart the backgroud processes of browser). If both methods above don't resolve the problem, maybe the packets injected by INTANG are interfered by your ISP or any firewalls in the path from your machine to the website. You may contact us for further support.
-
-Can I use proxy or VPN together with INTANG at the same time?
-------------------------------
-No, the mechanism of INTANG decides it is not compatible with any kind of proxy. For this reason, it is not working when using a VM with NAT mode, because most of the VM softwares implement NAT as a proxy. 
+If you are visiting a blocked website, or using sensitive keywords in HTTP request, it looks like the evasion strategy is not working. Possibly the strategy choosed by INTANG is not effective for the certain server, and you may try connecting the website again later after a certain period (i.e. 90 seconds). INTANG will automatically choose the best strategy for each server based on historical results. In another case, if your browser/application is started before INTANG, it may have established some connections that are not protected by INTANG. Then we recommend you to restart the browser/application. If the problem persists, you may submit a feedback through email. We will try our best to answer the problem.
 
