@@ -68,17 +68,17 @@ Source Code Organization
 ├── run.sh/stop.sh                              Run/Stop INTANG
 ├── distgen.sh                                  Generating distributable code tarball
 ├── strategies/ 
-    ├── dummy.c                                 Dummy strategy (do nothing)
-    ├── rst_***.c                               TCB teardown strategies
-    ├── do_***.c                                Buffer prefilling(data overlapping) strategies
-    ├── reverse_tcb.c                           TCB reversal strategy
-    ├── multiple_syn.c                          Multiple SYN (Resync-Desync) strategy
-    ├── mixed_***.c                             Combined strategies. 
-    ├── ...
+│   ├── dummy.c                                 Dummy strategy (do nothing)
+│   ├── rst_***.c                               TCB teardown strategies
+│   ├── do_***.c                                Buffer prefilling(data overlapping) strategies
+│   ├── reverse_tcb.c                           TCB reversal strategy
+│   ├── multiple_syn.c                          Multiple SYN (Resync-Desync) strategy
+│   ├── mixed_***.c                             Combined strategies. 
+│   ├── ...
 ├── tools/                                      Folder containing python scripts for data analysis
-    ├── dump_stats.py                           Show success rates of strategies by reading from Redis. (INTANG must be running)
-    ├── dump_stats_from_log.py                  Show success rates of strategies by reading from log.
-    ├── ...
+│   ├── dump_stats.py                           Show success rates of strategies by reading from Redis. (INTANG must be running)
+│   ├── dump_stats_from_log.py                  Show success rates of strategies by reading from log.
+│   ├── ...
 ```
 
 Disclaimer
