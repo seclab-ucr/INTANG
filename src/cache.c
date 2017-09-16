@@ -25,7 +25,7 @@
 #include "ttl_probing.h"
 
 
-/* for debug */
+// for debug 
 struct timespec ts;
 double t1, t2;
 
@@ -79,36 +79,6 @@ struct http_response_info {
     u_int8_t ttl;
 };
 
-/*
-struct vpn_request_info {
-    u_int32_t saddr;
-    u_int32_t daddr;
-    u_int16_t sport;
-    u_int16_t dport;
-};
-
-struct vpn_response_info {
-    u_int32_t saddr;
-    u_int32_t daddr;
-    u_int16_t sport;
-    u_int16_t dport;
-};
-
-struct tor_request_info {
-    u_int32_t saddr;
-    u_int32_t daddr;
-    u_int16_t sport;
-    u_int16_t dport;
-};
-
-struct tor_response_info {
-    u_int32_t saddr;
-    u_int32_t daddr;
-    u_int16_t sport;
-    u_int16_t dport;
-};
-*/
-
 struct strategy_info {
     u_int32_t saddr;
     u_int32_t daddr;
@@ -136,9 +106,9 @@ static struct pending_request prq[MAX_PENDING_REQUESTS_NUM];
 static ev_tstamp timeout = REQ_WAIT_RESP_TIMEOUT;
 static ev_timer timer;
 
-/* head is the index of the first pending request */
+// head is the index of the first pending request 
 static unsigned int prq_head = 0;
-/* tail is the index of the first available space */
+// tail is the index of the first available space 
 static unsigned int prq_tail = 0;
 
 static int prq_is_empty = 1;
@@ -271,56 +241,6 @@ void process_http_response(const struct fourtuple *fourtp, unsigned int seq, uns
     order(ORDER_PROC_HTTP_RESPONSE, info);
     ev_async_send(EV_DEFAULT_ &order_watcher);
 }
-
-/*
-void cache_vpn_request(const struct fourtuple *fourtp)
-{
-    struct vpn_request_info *info = (struct vpn_request_info*)malloc(sizeof(struct vpn_request_info));
-    info->saddr = fourtp->saddr;
-    info->daddr = fourtp->daddr;
-    info->sport = fourtp->sport;
-    info->dport = fourtp->dport;
-
-    order(ORDER_CACHE_VPN_REQUEST, info);
-    ev_async_send(EV_DEFAULT_ &order_watcher);
-}
-
-void process_vpn_response(const struct fourtuple *fourtp)
-{
-    struct vpn_response_info *info = (struct vpn_response_info*)malloc(sizeof(struct vpn_response_info));
-    info->saddr = fourtp->saddr;
-    info->daddr = fourtp->daddr;
-    info->sport = fourtp->sport;
-    info->dport = fourtp->dport;
-
-    order(ORDER_PROC_VPN_RESPONSE, info);
-    ev_async_send(EV_DEFAULT_ &order_watcher);
-}
-
-void cache_tor_request(const struct fourtuple *fourtp)
-{
-    struct tor_request_info *info = (struct tor_request_info*)malloc(sizeof(struct tor_request_info));
-    info->saddr = fourtp->saddr;
-    info->daddr = fourtp->daddr;
-    info->sport = fourtp->sport;
-    info->dport = fourtp->dport;
-
-    order(ORDER_CACHE_TOR_REQUEST, info);
-    ev_async_send(EV_DEFAULT_ &order_watcher);
-}
-
-void process_tor_response(const struct fourtuple *fourtp)
-{
-    struct tor_response_info *info = (struct tor_response_info*)malloc(sizeof(struct tor_response_info));
-    info->saddr = fourtp->saddr;
-    info->daddr = fourtp->daddr;
-    info->sport = fourtp->sport;
-    info->dport = fourtp->dport;
-
-    order(ORDER_PROC_TOR_RESPONSE, info);
-    ev_async_send(EV_DEFAULT_ &order_watcher);
-}
-*/
 
 void process_incoming_RST(const struct mypacket *packet)
 {
@@ -475,7 +395,7 @@ void _remove_vflag(struct fourtuple *fourtp)
 // (obselete) use get_sid()/set_sid() in memcache.c instead
 void _cache_strategy(struct strategy_info *info)
 {
-    /* label connection with strategy id */
+    // label connection with strategy id 
     save_sid(info->saddr, info->sport, info->daddr, info->dport, info->sid);
 
     free(info);
@@ -499,7 +419,7 @@ void _cache_dns_tcp_request(struct fourtuple *fourtp)
     char key[100];
     //sprintf(key, "dns:wait_resp:%u_%hu_%u_%hu", fourtp->saddr, fourtp->sport, fourtp->daddr, fourtp->dport);
     //set_int_ex_nx(key, 1, REQ_WAIT_RESP_TIMEOUT);
-    /* Redis doesn't provide a timely notification event when key expires, so we set up a timer using ev_timer */
+    // Redis doesn't provide a timely notification event when key expires, so we set up a timer using ev_timer 
     if (prq_is_full) {
         log_error("Pending request queue is full! Request is ignored.");
         free(fourtp);
@@ -524,7 +444,7 @@ void _cache_dns_tcp_request(struct fourtuple *fourtp)
     free(fourtp);
 }
 
-/* Cache the response in a short period to see if there're multiple responses */
+// Cache the response in a short period to see if there're multiple responses 
 void _process_dns_udp_response(struct dns_udp_response_info *info)
 {
     char key[MAX_QNAME_LEN+100], val[100];
@@ -534,8 +454,8 @@ void _process_dns_udp_response(struct dns_udp_response_info *info)
     get_str(key, val, 100);
     if (val[0] != 0) {
         if (strtol(val, NULL, 10) != info->ttl) {
-            /* received two different DNS responses from the same server
-             * looks like it has been poisoned */
+            // received two different DNS responses from the same server
+            // looks like it has been poisoned 
             log_info("[EVAL] PROBABLY POISONED DOMAIN: %s", info->qname);
 
             char key2[100];
@@ -550,7 +470,7 @@ void _process_dns_udp_response(struct dns_udp_response_info *info)
     free(info);
 }
 
-/* Match with the previously cached request and transfer the response into a UDP response. */
+// Match with the previously cached request and transfer the response into a UDP response.
 void _process_dns_tcp_response(struct dns_tcp_response_info *info)
 {
     char key[MAX_QNAME_LEN+100], val[100];
@@ -559,7 +479,7 @@ void _process_dns_tcp_response(struct dns_tcp_response_info *info)
     sprintf(key, "dns:resp:%u_%hu_%u_%hu", info->saddr, info->sport, info->daddr, info->dport);
     set_int_ex(key, 1, RESP_CACHE_TIMEOUT);
 
-    /* transfer into DNS UDP response */
+    // transfer into DNS UDP response 
     sprintf(key, "dns:req:%u_%s", info->txn_id, info->qname);
     get_str(key, val, 100);
     if (val[0] == 0) {
@@ -571,7 +491,7 @@ void _process_dns_tcp_response(struct dns_tcp_response_info *info)
     u_int16_t sport, dport;
     sscanf(val, "%u_%hu_%u_%hu", &saddr, &sport, &daddr, &dport);
 
-    /* process */
+    // process 
     struct fourtuple reverse_fourtp;
     reverse_fourtp.saddr = daddr;
     reverse_fourtp.daddr = saddr;
@@ -596,11 +516,11 @@ void _cache_http_request(struct http_request_info* info)
 {
     char key[100], val[MAX_REQLINE_LEN];
 
-    /* waiting for response, when there are multiple concurrent requests, 
-     * only cache the first unresponsed request.  */
+    // waiting for response, when there are multiple concurrent requests, 
+    // only cache the first unresponsed request.  
     //sprintf(key, "http:wait_resp:%u_%hu_%u_%hu", info->saddr, info->sport, info->daddr, info->dport);
     //set_int_ex_nx(key, 1, REQ_WAIT_RESP_TIMEOUT);
-    /* Redis doesn't provide a timely notification event when key expires, so we set up a timer using ev_timer */
+    // Redis doesn't provide a timely notification event when key expires, so we set up a timer using ev_timer 
     if (prq_is_full) {
         log_error("Pending request queue is full! Request is ignored.");
         return;
@@ -621,7 +541,7 @@ void _cache_http_request(struct http_request_info* info)
         log_debugv("PRQ enqueue: head=%d, tail=%d, is_empty=%d, is_full=%d", prq_head, prq_tail, prq_is_empty, prq_is_full);
     }
 
-    /* cache the last HTTP request sent in the connection */
+    // cache the last HTTP request sent in the connection 
     sprintf(key, "http:last_req:%u_%hu_%u_%hu", info->saddr, info->sport, info->daddr, info->dport);
     sprintf(val, "%s", info->req_line);
     set_str_ex(key, val, HTTP_LAST_REQ_CACHE_TIMEOUT);
@@ -629,23 +549,23 @@ void _cache_http_request(struct http_request_info* info)
     free(info);
 }
 
-/* When a HTTP resposne is received, we can learn the the connection
- * is still alived, and hasn't been shutdown by our strategy. Also,
- * we should cache the resposne for a short period, to see if there's
- * multiple different responses from the same 4-tuple. If it happens,
- * it is probably a HTTP injection attack. */
+// When a HTTP resposne is received, we can learn the the connection
+// is still alived, and hasn't been shutdown by our strategy. Also,
+// we should cache the resposne for a short period, to see if there's
+// multiple different responses from the same 4-tuple. If it happens,
+// it is probably a HTTP injection attack. 
 void _process_http_response(struct http_response_info* info)
 {
     char key[100], val[MAX_REQLINE_LEN];
     int sid;
 
-    /* HTTP injection detection */
+    // HTTP injection detection 
     sprintf(key, "http:resp:%u_%hu_%u_%hu_%u", info->saddr, info->sport, info->daddr, info->dport, info->seq);
     get_str(key, val, 100);
     if (val[0] != 0) {
         if (strtol(val, NULL, 10) != info->ttl) {
-            /* received two different HTTP responses from the same server
-             * looks like it has been poisoned */
+            // received two different HTTP responses from the same server
+            // looks like it has been poisoned 
             if (sid == 0) {
                 struct fourtuple f;
                 f.saddr = info->daddr;
@@ -672,8 +592,8 @@ void _process_http_response(struct http_response_info* info)
     free(info);
 }
 
-/* Process incoming RST packet
- * we need to decide whether it is from censor */
+// Process incoming RST packet
+// we need to decide whether it is from censor 
 void _process_incoming_RST(struct tcpinfo *info)
 {
     char key[100], val[MAX_REQLINE_LEN];
@@ -711,7 +631,7 @@ void _process_incoming_RST(struct tcpinfo *info)
         if (info->win != 0) {
 
             sprintf(key, "rst:%u_%hu_%u_%hu", info->saddr, info->sport, info->daddr, info->dport);
-            /* use a 32-bit int to record at most 4 TTLs */
+            // use a 32-bit int to record at most 4 TTLs 
             unsigned int ttl_set = get_int(key);
     
             if (ttl_set == 0) {
@@ -724,10 +644,10 @@ void _process_incoming_RST(struct tcpinfo *info)
                 }
 
                 if (ttl_set > 0) {
-                    /* already has one TTL, 2 RST/ACK with different TTLs in a short period means a GFW type-2 reset */
-                    /* already has two different TTLs, 3 RST/ACK with different TTLs in a short period means a GFW type-2 reset */
+                    // already has one TTL, 2 RST/ACK with different TTLs in a short period means a GFW type-2 reset 
+                    // already has two different TTLs, 3 RST/ACK with different TTLs in a short period means a GFW type-2 reset 
 
-                    /* Triggered RST attack */
+                    // Triggered RST attack 
                     struct fourtuple f;
                     f.saddr = info->daddr;
                     f.sport = info->dport;
@@ -1104,7 +1024,7 @@ static void order_cb(EV_P_ ev_async *w, int revents)
 }
 
 
-/* main function */
+// main function 
 int cache_main_loop()
 {
     connect_to_redis();

@@ -376,7 +376,7 @@ int dns_proxy_loop()
             }
         }
 
-        /* need to send a normal DNS request in order to keep connection alive, does it worth? */
+        // need to send a normal DNS request in order to keep connection alive, does it worth? 
         now = time(NULL);
         if (now - last_ack_time > KEEP_ALIVE_INTERVAL) {
             send_keep_alive_packet();

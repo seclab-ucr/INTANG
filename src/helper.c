@@ -179,15 +179,13 @@ void show_packet(struct mypacket *packet)
 
 int is_ip_in_whitelist(u_int32_t ip)
 {
-    /* localhost */
+    // localhost 
     if ((ip & 0xff) == 127 && (ip >> 8 & 0xff) == 0)
         return 1;
 
-    /* for test */
-    /*
-    if (ip == str2ip(PACKET_FORWARDER))
-        return 1;
-    */
+    // for test 
+    //if (ip == str2ip(PACKET_FORWARDER))
+    //    return 1;
 
     return 0;
 }
@@ -224,13 +222,13 @@ unsigned int make_hash3(u_int16_t txn_id, const char *qname)
 }
 
 
-/* an naive algorithm for checksum calculation */
+// an naive algorithm for checksum calculation 
 unsigned int calc_checksum(const unsigned char *payload, unsigned short payload_len)
 {
     int i;
     unsigned int checksum = 0, remain = 0;
 
-    /* round down to multiple of 4 */
+    // round down to multiple of 4 
     unsigned short rd_payload_len = payload_len / 4 * 4;
     for (i = 0; i < rd_payload_len; i += 4) {
         checksum ^= *((unsigned int*)(payload+i));

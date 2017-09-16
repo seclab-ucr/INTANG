@@ -62,7 +62,7 @@ void log_func(int level, const char *fmt, ...)
     timeinfo = localtime(&rawtime);
     strftime(time_str, 20, "%Y-%m-%d %H:%M:%S", timeinfo);
 
-    /* a more acurate timestamp */
+    // a more acurate timestamp 
     clock_gettime(CLOCK_REALTIME, &ts);
     time_ts = ts.tv_sec + ts.tv_nsec / 1000000000.0;
 

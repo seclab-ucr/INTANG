@@ -18,11 +18,11 @@ struct order {
     void *data;
 };
 
-/* cyclic queue */
+// cyclic queue 
 static struct order order_queue[ORDER_QUEUE_SIZE];
-/* head is the index of first unprocessed order */
+// head is the index of first unprocessed order 
 static unsigned int head = 0;
-/* tail is the index of first available space */
+// tail is the index of first available space 
 static unsigned int tail = 0;
 
 static int is_empty = 1;

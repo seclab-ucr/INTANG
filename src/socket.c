@@ -23,7 +23,7 @@ int init_socket()
         log_error("failed to create raw socket.");
         return -1;
     }
-    /* setting socket option to use MARK value */
+    // setting socket option to use MARK value 
     int mark = MARK;
     if (setsockopt(raw_sock, SOL_SOCKET, SO_MARK, &mark, sizeof(mark)) < 0)
     {
@@ -230,7 +230,7 @@ void send_tcp(struct send_tcp_vars *vars)
 
     if (vars->wrong_ip_tot_len) {
         iphdr->tot_len += 16;
-        /* seems not working! dunno why */
+        // seems not working! dunno why 
     }
 
     // calculate checksum

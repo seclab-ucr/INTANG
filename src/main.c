@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +37,9 @@
 
 #define VERSION 7
 
+// TODO: clean the code and add/rewrite comments
+
+// 0 - don't need to drop the redis DB when upgrading to a newer version, 1 - otherwise
 int need_to_delete_redis_db = 1;
 
 
@@ -66,7 +68,7 @@ int opt_protect_http_protocol = 1;
 
 // 0 - disable, 1 - enable
 int opt_protect_dns_protocol = 0;
-int opt_dns_only_blacklisted = 0;
+int opt_dns_only_blacklisted = 1;
 
 // 0 - disable, 1 - enable
 int opt_protect_vpn_protocol = 0;
@@ -85,7 +87,7 @@ int opt_tor_port = 0;
 
 const char REDIS_PID_FILE[] = "/var/run/redis.intangd.pid";
 
-/* delay in ms after packet injection */
+// delay in ms after packet injection 
 #define DELAY_AFTER_PACKET_INJECTION 30000
 
 
@@ -224,8 +226,8 @@ int teardown_nfq()
     }
 
 #ifdef INSANE
-    /* normally, applications SHOULD NOT issue this command, since
-     * it detaches other programs/sockets from AF_INET, too ! */
+    // normally, applications SHOULD NOT issue this command, since
+    // it detaches other programs/sockets from AF_INET, too ! */
     log_debug("unbinding from AF_INET");
     nfq_unbind_pf(g_nfq_h, AF_INET);
 #endif
@@ -423,7 +425,7 @@ int remove_iptables_rules()
     return 0;
 }
 
-/* caching thread entry function */
+// caching thread entry function 
 void* cache_main(void *arg)
 {
     int ret;
@@ -436,7 +438,7 @@ void* cache_main(void *arg)
     return NULL;
 }
 
-/* DNS proxy thread entry function */
+// DNS proxy thread entry function 
 void* dns_main(void *arg)
 {
     int ret;
@@ -449,7 +451,7 @@ void* dns_main(void *arg)
     return NULL;
 }
 
-/* Feedback thread entry function */
+// Feedback thread entry function 
 void* feedback_main(void *arg)
 {
     while (1)
@@ -460,7 +462,7 @@ void* feedback_main(void *arg)
     return NULL;
 }
 
-/* Print debug info periodically */
+// Print debug info periodically 
 void* debug_main(void *arg)
 {
     while (1)
@@ -490,7 +492,7 @@ void initialize()
     int ver = read_version();
     if (ver < VERSION) {
         log_info("Previous version %d, current version %d", ver, VERSION); 
-        /* this is a version update! */
+        // this is a version update! 
         if (need_to_delete_redis_db) {
             log_info("Deleting redis DB due to version update.");
             delete_redis_db();
@@ -521,7 +523,7 @@ void initialize()
 
     init_ev_watchers();
 
-    /* Begin to intercept packets */
+    // Begin to intercept packets 
     //if (setup_strategy() == -1) {
     //    log_error("Failed to setup strategy");
     //    exit(EXIT_FAILURE);
@@ -603,7 +605,7 @@ int process_udp_packet(struct mypacket *packet, char inout)
     fourtp.dport = udphdr->uh_dport;
 
     if (dport == 53 || sport == 53) {
-        /* Parse DNS header */
+        // Parse DNS header
         struct mydnshdr *dnshdr = (struct mydnshdr*)packet->payload;
         unsigned short txn_id = ntohs(dnshdr->txn_id);
         int qdcount = ntohs(dnshdr->questions);
@@ -635,19 +637,19 @@ int process_udp_packet(struct mypacket *packet, char inout)
                 
                 log_debug("DNS Query: %s %d %d", query.qname, query.qtype, query.qclass);
 
-                /* save the first query name for later usage */
+                // save the first query name for later usage 
                 if (i == 0) {
                     qname[0] = 0;
                     strncat(qname, query.qname, MAX_QNAME_LEN - 1);
                 }
 
-                /* check if qname in blacklist */
+                // check if qname in blacklist 
                 if (is_poisoned_domain(qname))
                     flag = 1;
             }
 
             if (dport == 53) {
-                /* Process outgoing DNS requests */
+                // Process outgoing DNS requests
                 log_debug("[UDP] Sent a DNS request from %s:%d to %s:%d.", sip, sport, dip, dport);
 
                 if (opt_protect_dns_protocol == 1 && 
@@ -655,15 +657,15 @@ int process_udp_packet(struct mypacket *packet, char inout)
                     log_debug("Redirecting to TCP.");
                     log_debugv("[EVAL] DNS TCP request %d", txn_id);
 
-                    /* Tell the caching thread to cache the request
-                     * use DNS transaction ID and first query name as unique ID
-                     * transaction ID alone may cause collision */
+                    // Tell the caching thread to cache the request
+                    // use DNS transaction ID and first query name as unique ID
+                    // transaction ID alone may cause collision 
                     cache_dns_udp_request(txn_id, qname, &fourtp);
 
-                    /* send the request over TCP */
+                    // send the request over TCP 
                     ret = send_dns_req(packet->payload, packet->payload_len);
                     if (ret == 0) {
-                        /* drop the packet */
+                        // drop the packet 
                         return -1;
                     } else {
                         log_error("DNS redirect failed.");
@@ -677,14 +679,14 @@ int process_udp_packet(struct mypacket *packet, char inout)
             else if (sport == 53) {
                 if (opt_protect_dns_protocol == 1 && 
                         (opt_dns_only_blacklisted == 0 || opt_dns_only_blacklisted == 1 && flag)) {
-                    /* the response must be sent by ourself */
+                    // the response must be sent by ourself
                     return 0;
                 }
-                /* Process incoming DNS responses */
+                // Process incoming DNS responses
                 log_debug("[UDP] Got a DNS response from %s:%d to %s:%d.", sip, sport, dip, dport);
                 log_debugv("[EVAL] DNS UDP response %d", txn_id);
 
-                /* Tell the caching thread to process the dns udp response */
+                // Tell the caching thread to process the dns udp response
                 process_dns_udp_response(txn_id, qname, &fourtp, iphdr->ttl);
             }
 
@@ -727,20 +729,18 @@ int process_tcp_packet(struct mypacket *packet, char inout)
     fourtp.sport = tcphdr->th_sport;
     fourtp.dport = tcphdr->th_dport;
 
-    /* for testing uni-directional packet forwarding to bypass IP blocking */
-    /*
-    if (dport == 80 && is_blocked_ip(dip)) {
-        log_debug("Going to forward that packet!!!");
-        unsigned int newlen = packet->len + 4;
-        char *newpkt = (char*)malloc(newlen);
-        memcpy(newpkt, packet->data, packet->len);
-        *(u_int32_t*)(newpkt + packet->len) = iphdr->daddr;
-        ip_hdr(newpkt)->daddr = str2ip(PACKET_FORWARDER);
-        send_raw(newpkt, newlen);
-        log_debug("sent!!!");
-        return 0;
-    }
-    */
+    // for testing uni-directional packet forwarding to bypass IP blocking 
+    //if (dport == 80 && is_blocked_ip(dip)) {
+    //    log_debug("Going to forward that packet!!!");
+    //    unsigned int newlen = packet->len + 4;
+    //    char *newpkt = (char*)malloc(newlen);
+    //    memcpy(newpkt, packet->data, packet->len);
+    //    *(u_int32_t*)(newpkt + packet->len) = iphdr->daddr;
+    //    ip_hdr(newpkt)->daddr = str2ip(PACKET_FORWARDER);
+    //    send_raw(newpkt, newlen);
+    //    log_debug("sent!!!");
+    //    return 0;
+    //}
 
     if (tcphdr->th_flags == TCP_SYN) {
         // Processing outgoing SYN packet. 
@@ -750,7 +750,7 @@ int process_tcp_packet(struct mypacket *packet, char inout)
         //    return 0;
         
 
-        /* choose a strategy for the newly created connection */
+        // choose a strategy for the newly created connection
         int sid = choose_strategy_by_historical_result(iphdr->daddr);
         log_debug("Using strategy %s", g_strats[sid].name);
         set_sid(&fourtp, sid);
@@ -766,9 +766,9 @@ int process_tcp_packet(struct mypacket *packet, char inout)
         }
     }
     if (tcphdr->th_flags == (TCP_SYN | TCP_ACK)) {
-        /* Got a SYN-ACK from server */
+        // Got a SYN-ACK from server
 
-        /* send an ACK with 1 TTL to make home router happy */
+        // send an ACK with 1 TTL to make home router happy 
         if (opt_inject_ack_with_one_ttl)
             send_ACK_with_one_ttl(dip, dport, sip, sport, tcphdr->th_ack, htonl(ntohl(tcphdr->th_seq)+1));
 
@@ -804,7 +804,7 @@ int process_tcp_packet(struct mypacket *packet, char inout)
     } 
     else if ((tcphdr->th_flags & TCP_ACK) && 
         !(tcphdr->th_flags & (TCP_SYN | TCP_RST))) {
-        /* ignore ACK packets without payload */
+        // ignore ACK packets without payload 
         if (packet->payload_len == 0) 
             return 0;
 
@@ -814,34 +814,35 @@ int process_tcp_packet(struct mypacket *packet, char inout)
                 (payload[0] == 'P' && payload[1] == 'O' && 
                  payload[2] == 'S' && payload[3] == 'T' && 
                  payload[4] == ' ')) {
-                /* Got a outgoing HTTP request */
+                // Got a outgoing HTTP request 
                 log_debug("[TCP] Sent a HTTP request from %s:%d to %s:%d.", sip, sport, dip, dport);
                 int i, j, k, l;
-                /*
-                char req_line[1000];
-                for (i = 0; i < 1000; i++) {
-                    if (payload[i] == '\r' || payload[i] == '\n') {
-                        req_line[i] = 0;
-                        break;
-                    }
-                    req_line[i] = payload[i];
-                }
-                */
+                
+                //char req_line[1000];
+                //for (i = 0; i < 1000; i++) {
+                //    if (payload[i] == '\r' || payload[i] == '\n') {
+                //        req_line[i] = 0;
+                //        break;
+                //    }
+                //    req_line[i] = payload[i];
+                //}
+                
+                // Generate the HTTP request line. Format: GET/POST domain/url. e.g. GET www.google.com/index.php
                 char req_line2[1000];
-                /* copy GET/POST */
+                // copy GET/POST 
                 for (i = 0; payload[i] != ' ' && i < packet->payload_len; i++) {
                     req_line2[i] = payload[i];
                 }
                 req_line2[i++] = ' ';
                 k = i; 
     
-                /* find Host field */
+                // find Host field
                 for (j = i; j < packet->payload_len; j++) {
                     if (payload[j] == 'H' && payload[j+1] == 'o' &&
                             payload[j+2] == 's' && payload[j+3] == 't' &&
                             payload[j+4] == ':' && (payload[j-1] == '\r' || payload[j-1] == '\n')) {
                         j += 5;
-                        /* copy Host value */
+                        // copy Host value 
                         while (payload[j] == ' ') j++;
                         for (l = 0; l < 99 && j+l < packet->payload_len; l++) {
                             if (payload[j+l] == '\r' || payload[j+l] == '\n')
@@ -852,7 +853,7 @@ int process_tcp_packet(struct mypacket *packet, char inout)
                     }
                 }
 
-                /* copy the rest of request line */
+                // copy the rest of request line 
                 for (; i < 900 && i < packet->payload_len; i++) {
                     if (payload[i] == '\r' || payload[i] == '\n') {
                         break;
@@ -883,13 +884,13 @@ int process_tcp_packet(struct mypacket *packet, char inout)
         }
         else if (sport == 80) {
             if (payload[0] == 'H' && payload[1] == 'T' && payload[2] == 'T' && payload[3] == 'P') {
-                /* Got a incoming HTTP response */
+                // Got a incoming HTTP response 
                 log_debug("[TCP] Got a HTTP response from %s:%d to %s:%d.", sip, sport, dip, dport);
                 process_http_response(&fourtp, tcphdr->th_seq, iphdr->ttl);
             }
         }
         else if (dport == 53) {
-            /* Got a DNS request over TCP */
+            // Got a DNS request over TCP 
             log_debug("[TCP] Sent a DNS request from %s:%d to %s:%d.", sip, sport, dip, dport);
 
             int sid = get_sid(&fourtp);
@@ -905,9 +906,9 @@ int process_tcp_packet(struct mypacket *packet, char inout)
             cache_dns_tcp_request(&fourtp);
         }
         else if (sport == 53) {
-            /* Got a DNS response over TCP, maybe triggered by our app, or maybe not */
+            // Got a DNS response over TCP, maybe triggered by our app, or maybe not 
             log_debug("[TCP] Got a DNS response from %s:%d to %s:%d.", sip, sport, dip, dport);
-            /* parse the DNS response to get the first qname */
+            // parse the DNS response to get the first qname 
             const unsigned char *dns_payload = packet->payload + 2;
             struct mydnshdr *dnshdr = (struct mydnshdr*)dns_payload;
             unsigned short txn_id = htons(dnshdr->txn_id);
@@ -939,14 +940,14 @@ int process_tcp_packet(struct mypacket *packet, char inout)
                     
                     log_debug("DNS Query: %s %d %d", query.qname, query.qtype, query.qclass);
     
-                    /* use the first query to calc hash */
+                    // use the first query to calc hash 
                     qname[0] = 0;
                     strncat(qname, query.qname, MAX_QNAME_LEN - 1);
                 }
 
-                /* Tell the caching thread to process the dns udp response
-                 * use DNS transaction ID and first query name as unique ID
-                 * transaction ID alone may cause collision */
+                // Tell the caching thread to process the dns udp response
+                // use DNS transaction ID and first query name as unique ID
+                // transaction ID alone may cause collision 
                 process_dns_tcp_response(txn_id, qname, &fourtp, tcphdr->th_seq, iphdr->ttl, packet->payload, packet->payload_len);
 
             }
@@ -984,7 +985,7 @@ int process_tcp_packet(struct mypacket *packet, char inout)
             // incomine packet
         }
         else {
-            // for all other protocols? This branch is a piece of temporary code, should be fixed.
+            // TODO: for all other protocols. This branch is a piece of temporary code, should be re-write.
             if (inout == 0) {
                 // incoming packet
                 log_debug("this is an incoming packet.");
@@ -1006,7 +1007,7 @@ int process_tcp_packet(struct mypacket *packet, char inout)
         }
     }
     else if (tcphdr->th_flags & TCP_RST) {
-        /* Got an incoming RST */
+        // Got an incoming RST 
         log_debug("[TCP] Got an incoming RST from %s:%d to %s:%d.", sip, sport, dip, dport);
 
         process_incoming_RST(packet);
@@ -1151,6 +1152,7 @@ int main(int argc, char **argv)
         printf("INTANG is compiled in Evalution Mode. Usage:\n%s <sid>\n", argv[0]);
         return 0;
     }
+#endif
 
     //TODO: use option parser
     int i;
@@ -1177,22 +1179,21 @@ int main(int argc, char **argv)
             return -1;
         }
     }
-#endif
     
-    /* check for root privilege */
+    // check for root privilege
     uid_t uid=getuid(), euid=geteuid();
     if (euid != 0) {
         printf("This program needs root privilege to work.\n");
         exit(EXIT_FAILURE);
     } 
 
-    /* create the application directory if not exist */
+    // create the application directory if not exist
     mkdir(APP_DIR, 0755);
 
     //setlogmask(LOG_UPTO(LOG_NOTICE));
     //openlog("intangd", LOG_CONS | LOG_NDELAY | LOG_PID, LOG_LOCAL1);
 
-    /* turns the process into a daemon */
+    // turns the process into a daemon 
     setup_daemon();
 
     printf("Daemon has started.\n");
@@ -1200,15 +1201,15 @@ int main(int argc, char **argv)
         printf("The logs can be found in %s\n", LOG_FILE);
     }
 
-    /* now the process turns to a daemon process */
+    // now the process turns into a daemon process
 
-    /* initialization */
+    // initialization
     initialize();
 
 #ifdef TEST
     test_main();
 #else
-    /* Main loop */
+    // Main loop
     int rv;
     char buf[65536];
 

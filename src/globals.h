@@ -19,7 +19,7 @@
 
 #define DNS_BLACKLIST "dns_blacklist"
 
-/* if you are behind a NAT and your NAT may be closed by outgoing RST, you should fill in your NAT external IP and turn on opt_inject_fake_syn_and_syn_ack. */
+// if you are behind a NAT and your NAT may be closed by outgoing RST, you should fill in your NAT external IP and turn on opt_inject_fake_syn_and_syn_ack. 
 #define NAT_EXT_IP "58.53.150.103"
 
 

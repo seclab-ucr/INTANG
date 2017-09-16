@@ -23,10 +23,10 @@
 #define TMP_LOG_PATH WORKING_DIR"intangd.log.tmp"
 #define COMPRESSED_LOG_PATH "/tmp/intangd.log.tar.gz"
 
-/* Maximum upload size 1MB (before compression) */
+// Maximum upload size 1MB (before compression) 
 #define MAX_UPLOAD_SIZE 1048576
 
-/* When log size exceeds this, don't upload any more */
+// When log size exceeds this, don't upload any more 
 #define MAX_LOG_SIZE 104857600
 
 extern time_t startup_ts;

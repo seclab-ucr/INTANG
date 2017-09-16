@@ -16,7 +16,7 @@ struct send_tcp_vars;
 struct mypacket;
 struct fourtuple;
 
-/* helpers */
+// helpers 
 int read_version();
 void write_version(int version);
 

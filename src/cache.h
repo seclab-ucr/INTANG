@@ -7,30 +7,30 @@
 #include "protocol.h"
 
 
-/* Wait for requests and responses for 30 seconds to verify the state of the conneciton. If there's no requests and responses within 30 seconds, give up the verification */
+// Wait for requests and responses for 30 seconds to verify the state of the conneciton. If there's no requests and responses within 30 seconds, give up the verification 
 #define STRATEGY_VERIFICATION_TIMEOUT 30
 
-/* A response must be received after sending a request, otherwise we think it's our strategy shutdown the connection */
+// A response must be received after sending a request, otherwise we think it's our strategy shutdown the connection 
 #define REQ_WAIT_RESP_TIMEOUT 5
 
-/* Cache the 4-tuple of DNS UDP request */
+// Cache the 4-tuple of DNS UDP request 
 #define DNS_UDP_REQ_CACHE_TIMEOUT 5
 
-/* Cache the last HTTP request sent in a connection */
+// Cache the last HTTP request sent in a connection 
 #define HTTP_LAST_REQ_CACHE_TIMEOUT 10
 
-/* Cache the response, when wait_resp timeouts, it will check
- * if there's any response in cache. So RESP_CACHE_TIMEOUT 
- * must be greater than REQ_WAIT_RESP_TIMEOUT */
+// Cache the response, when wait_resp timeouts, it will check
+// if there's any response in cache. So RESP_CACHE_TIMEOUT 
+// must be greater than REQ_WAIT_RESP_TIMEOUT 
 #define RESP_CACHE_TIMEOUT 10
 
-/* Interval between two RST packets in a RST injection attack */
+// Interval between two RST packets in a RST injection attack 
 #define RST_CACHE_TIMEOUT 2
 
-/* The confinement period after a RST attack is triggered */
+// The confinement period after a RST attack is triggered 
 #define RST_ATTACK_TIMEOUT 90
 
-/* four tuple will only be verified once during 60 seconds */
+// four tuple will only be verified once during 60 seconds 
 #define STRATEGY_VERIFIED_TIMEOUT 60
 
 
@@ -93,28 +93,6 @@ process_http_response(
     unsigned char ttl
 );
 
-/*
-void
-cache_vpn_request(
-    const struct fourtuple *fourtp,
-);
-
-void
-process_vpn_response(
-    const struct fourtuple *fourtp,
-);
-
-void
-cache_tor_request(
-    const struct fourtuple *fourtp,
-);
-
-void
-process_tor_response(
-    const struct fourtuple *fourtp,
-);
-*/
-
 void process_incoming_RST(
     const struct mypacket *packet
 );
@@ -122,10 +100,6 @@ void process_incoming_RST(
 
 void on_request_expire(const char *oldkey);
 
-
-/******************
- * Caching thread *
- ******************/
 
 int cache_main_loop();
 
