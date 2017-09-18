@@ -31,6 +31,6 @@ $(EXECUTABLE): $(OBJECTS)
 #	cd strategies && 
 
 clean:
-	rm *.o
+	find . -name "*.o" | xargs rm
 	rm $(EXECUTABLE)
 
