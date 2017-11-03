@@ -142,6 +142,7 @@ int stop_redis_server()
 
 void signal_handler(int signum)
 {
+    printf("Daemon exited unexpectedly. Signal %d recved.\n", signum);
     log_debug("Signal %d recved.", signum);
     cleanup();
     log_info("Daemon exited.");
@@ -509,6 +510,12 @@ void initialize()
         exit(EXIT_FAILURE);
     }
 
+    log_debug("Adding iptables rules.");
+    if (add_iptables_rules() == -1) {
+        log_error("Failed to add iptables rules.");
+        exit(EXIT_FAILURE);
+    }
+
     register_signal_handlers();
 
     if (setup_nfq() == -1) {
@@ -516,11 +523,13 @@ void initialize()
         exit(EXIT_FAILURE);
     }
 
+    log_debug("Init DNS client.");
     if (init_dns_cli() == -1) {
         log_error("Failed to initialize DNS module");
         exit(EXIT_FAILURE);
     }
 
+    log_debug("Init ev watchers.");
     init_ev_watchers();
 
     // Begin to intercept packets 
@@ -529,12 +538,8 @@ void initialize()
     //    exit(EXIT_FAILURE);
     //}
     
+    log_debug("Loading TTL from file.");
     load_ttl_from_file("ttl");
-
-    if (add_iptables_rules() == -1) {
-        log_error("Failed to add iptables rules.");
-        exit(EXIT_FAILURE);
-    }
 
     // start a debug thread
     //pthread_t thread_dbg;

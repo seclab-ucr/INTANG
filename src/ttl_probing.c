@@ -83,7 +83,10 @@ int load_ttl_from_file(char *filename)
         return 0;
     }
     while ((read = getline(&line, &len, fp)) != -1) {
+        // TODO: more robust checks
         if (line[0] == '#') 
+            continue;
+        if (read < 9) 
             continue;
         char *ip = line;
         char *tmp;
