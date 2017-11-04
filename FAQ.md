@@ -11,11 +11,13 @@ Why can't I access to Internet after using INTANG?
 ------------------------------
 Since INTANG intercepts HTTP and DNS packets by adding iptables rules, if it is terminated abnormally, it may not be able to remove the iptables rules. If this happens, you will need to manually remove those rules (a simple way is using `iptables -F`, if no other existing rules).
 
-Why some websites become very slow or even can't be accessed after using INTANG?
+Why can't some websites be visited after using INTANG?
 ------------------------------
 Our censorship evasion strategies are not perfect. They may accidentally terminate the normal connections on server-side. We are working on finding more effective discrepancies to reduce this side-effect. By now, INTANG has an automatic strategy selection algorithm, which can switch between a bunch of strategies. In case one strategy fails often, it will turn to alternative strategies. Different strategies work better for different servers, so it may eventually find and save the best strategy for each server.
 
-Also, INTANG chooses a random DNS resolver when it starts up, if you feel the DNS resolver is slow, you can use other unpolluted DNS resolvers by modifying dns.c. By default, INTANG only delegate DNS resolving for websites in our list. But you may also choose to do DNS delegation for all websites or turn it off completely by modifying main.c. 
+Why do the webpages load slower after using INTANG?
+------------------------------
+INTANG chooses a random DNS resolver when it starts up, if you feel the DNS resolver is slow, you can use other unpolluted DNS resolvers by modifying dns.c. By default, INTANG only delegate DNS resolving for websites in our list. But you may also choose to do DNS delegation for all websites or turn it off completely by modifying main.c. 
 
 I'm still experiencing "Connection has been reset".
 ------------------------------
