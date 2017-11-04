@@ -5,7 +5,9 @@ What can I do with INTANG?
 ------------------------------
 With INTANG, your HTTP connections are protected from censor's monitoring. For some reasons, GFW will block the communication between a client and a server for 90 seconds after a sensitive keyword is seen in the HTTP request. You will see in the browser a "Connection has been reset" page once that happens. By using the tool, you can bypass such kind of attacks from GFW. 
 
-Also, you can visit some blocked websites, e.g. wordpress.com, dropbox.com, etc. Since their servers are not blocked by IP blocking, but only DNS poisoning, our tool can establish a connection to a unpolluted DNS resolver using TCP. 
+Also, you can visit some blocked websites, e.g. wordpress.com, dropbox.com, etc. Since their servers are not blocked by IP-blocking, but only DNS poisoning, our tool can establish a connection to a unpolluted DNS resolver using TCP. 
+
+However, websites such as Google, Facebook, Twitter, etc., are IP-blocked by the GFW, so they are not accessible even with INTANG.
 
 Why can't I access to Internet after using INTANG?
 ------------------------------
