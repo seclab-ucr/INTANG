@@ -4,7 +4,7 @@
 INCLUDE_DIRS = -I. -Istrategies
 CC = gcc
 CUSTOM_DEFINES = #-DEVALUATION# -DTEST
-CFLAGS = -g -c $(CUSTOM_DEFINES) $(INCLUDE_DIRS) # -Wall 
+CFLAGS = -std=c99 -Du_char="unsigned char" -g -c $(CUSTOM_DEFINES) $(INCLUDE_DIRS) # -Wall 
 LDFLAGS = -lnetfilter_queue -lnfnetlink -lhiredis -lev
 SOURCES = main.c helper.c logging.c socket.c strategy.c cache.c dns.c dnscli.c feedback.c test.c order.c redis.c memcache.c ttl_probing.c discrepancy.c
 STRATEGIES = $(shell find strategies -type f -iname '*.c')
