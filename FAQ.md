@@ -3,11 +3,11 @@ FAQ
 ==================
 What can I do with INTANG?
 ------------------------------
-With INTANG, your HTTP connections are protected from censor's monitoring. For some reasons, GFW will block the communication between a client and a server for 90 seconds after a sensitive keyword is seen in the HTTP request. You will see in the browser a "Connection has been reset" page once that happens. By using the tool, you can bypass such kind of attacks from GFW. 
+INTANG aims at evading the GFW's TCP connection reset attacks. Connection reset is a commonly used technique by the GFW to shutdown connections and has been found working on protocols like HTTP/VPN/Tor/DNS over TCP, etc. For example, when you are visiting a foreign website and sees a "Connection has been reset" error page in the browser, it's possibly caused by the GFW. Also, it happens sometimes when you are connecting to a VPN or Tor replay outside China. 
 
-Also, you can visit some blocked websites, e.g. wordpress.com, dropbox.com, etc. Since their servers are not blocked by IP-blocking, but only DNS poisoning, our tool can establish a connection to a unpolluted DNS resolver using TCP. 
-
-However, websites such as Google, Facebook, Twitter, etc., are IP-blocked by the GFW, so they are not accessible even with INTANG.
+INTANG works at TCP-layer and disrupt the state machine on the GFW. So it can help all application protocols based on TCP evade censorship. With INTANG, your TCP connections are protected from censor's monitoring. 
+You can visit some blocked websites, e.g. wordpress.com, dropbox.com, etc. Since their servers are not IP-blocked by the GFW, but suffering from DNS poisoning and connection reset. Our tool can also establish a connection to a unpolluted DNS resolver using TCP to evade DNS poisoning. 
+However, websites such as Google, Facebook, Twitter, etc., are IP-blocked by the GFW, so they are not accessible even with INTANG. IP-blocking works at IP layer, which is more low-level than TCP layer. There are also some recent research projects called Refraction Networking aiming at evading IP-blocking. 
 
 Why can't I access to Internet after using INTANG?
 ------------------------------
