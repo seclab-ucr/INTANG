@@ -7,9 +7,9 @@ Platform
 ==================
 Linux (must has netfilter supported in kernel)
 
-*Tested with Ubuntu 12.04/14.04/16.04.*
+*Tested with Ubuntu 12.04/14.04/16.04. and Fedora 26*
 
-Dependencies
+Ubuntu Dependencies
 ==================
 * libnetfilter-queue-dev
 * libnfnetlink-dev
@@ -19,9 +19,19 @@ Dependencies
 * python-redis (optional)
 * python-scapy (optional)
 
+Fedora Dependencies
+==================
+* libnetfilter_queue-devel
+* libnfnetlink-devel
+* redis
+* hiredis-devel
+* libev-devel
+* python-redis (optional)
+* scapy (optional)
+
 Compilation
 ==================
-1. Install prerequisite packages:
+1. Install prerequisite packages on Ubuntu:
 ```shell
 sudo apt-get update
 sudo apt-get install libnetfilter-queue-dev libnfnetlink-dev redis-server libhiredis-dev libev-dev python-redis python-scapy
@@ -29,6 +39,11 @@ sudo apt-get install libnetfilter-queue-dev libnfnetlink-dev redis-server libhir
 or
 ```shell
 ./install_deps.sh
+```
+Install prerequisite packages on Fedora:
+```shell
+sudo dnf update
+sudo dnf install libnetfilter_queue-devel libnfnetlink-devel redis hiredis-devel libev-devel python-redis scapy
 ```
 2. Compile:
 ```shell
