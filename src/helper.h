@@ -42,5 +42,8 @@ int is_blocked_ip(const char *ip);
 
 int startswith(const char *a, const char *b);
 
+int is_https_client_hello(const char *payload);
+int is_https_server_hello(const char *payload);
+
 #endif
 
