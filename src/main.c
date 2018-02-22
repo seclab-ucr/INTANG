@@ -1151,6 +1151,20 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
             //show_packet(&packet);
             ret = process_udp_packet(&packet, inout);
             break;
+        case 41: // 6-in-4 tunnel
+            log_warn("This is a 6-in-4 packet.");
+            struct myipv6hdr *ipv6hdr = ipv6_hdr_6in4(pkt_data);
+            switch (ipv6hdr->protocol) {
+                case 6: // TCP
+                    log_warn("6-in-4 TCP.");
+                    break;
+                case 17: // UDP
+                    log_warn("6-in-4 UDP.");
+                    break;
+                default:
+                    log_error("6-in-4 Invalid protocol: %d", ipv6hdr->protocol);
+            }
+            break;
         default:
             log_error("Invalid protocol: %d", packet.iphdr->protocol);
     }
