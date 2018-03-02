@@ -684,6 +684,8 @@ void _process_incoming_RST(struct tcpinfo *info)
                     set_aflag2(info->daddr, info->saddr);
                 }
 
+                // The key may has been overwritten, need to set it again.
+                sprintf(key, "rst:%u_%hu_%u_%hu", info->saddr, info->sport, info->daddr, info->dport);
                 ttl_set = insert_ttl(info->ttl, ttl_set);
                 set_int_ex(key, ttl_set, RST_CACHE_TIMEOUT);
             }
