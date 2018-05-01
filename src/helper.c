@@ -145,7 +145,7 @@ void show_packet(struct mypacket *packet)
             printf("\t+ SPort: %d\n", ntohs(packet->tcphdr->th_sport));
             printf("\t+ DPort: %d\n", ntohs(packet->tcphdr->th_dport));
             printf("\t+ Seq num: %08x\n", ntohl(packet->tcphdr->th_seq));
-            printf("\t+ Ack num: %08x\n", ntohl(packet->tcphdr->th_sport));
+            printf("\t+ Ack num: %08x\n", ntohl(packet->tcphdr->th_ack));
             printf("\t+ Data offset: %d\n", packet->tcphdr->th_off);
             printf("\t+ TCP flags: %s\n", tcp_flags(packet->tcphdr->th_flags));
             printf("\t+ Window: %d\n", ntohs(packet->tcphdr->th_win));
