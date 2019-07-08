@@ -83,7 +83,7 @@ Source Code Organization
 
 Disclaimer
 ==================
-INTANG is a reasearch-oriented project. Anyone using it should be aware of the potential risks and responsible for his/her own actions against the censorship authority.
+INTANG is a research-oriented project. Anyone using it should be aware of the potential risks and responsible for his/her own actions against the censorship authority.
 
 Contact
 ==================
