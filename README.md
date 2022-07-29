@@ -1,7 +1,7 @@
 
 Introduction
 ==================
-INTANG is research project for circumventing the "TCP reset attack" from the Great Firewall of China (GFW) by disrupting/desynchronizing the TCP Control Block (TCB) on the censorship devices. INTANG runs as a client-side only tool in background to protect the TCP connections from being interfered (or even monitored) by the GFW. It works on TCP/IP layers instead of application layer, thus considered more general and can help all application layer protocols, e.g. HTTP, DNS over TCP, OpenVPN, Tor, evading censorship. It can also be run on a proxy to make the deployment easier for those who are incapable of running INTANG (using OSes other than Linux or doesn't have root privillige).
+INTANG is a research project for circumventing the "TCP reset attack" from the Great Firewall of China (GFW) by disrupting/desynchronizing the TCP Control Block (TCB) on the censorship devices. INTANG runs as a client-side only tool in background to protect the TCP connections from being interfered (or even monitored) by the GFW. It works on TCP/IP layers instead of application layer, thus considered more general and can help all application layer protocols to evade censorship, e.g. HTTP, DNS over TCP, OpenVPN, Tor. It can also be run on a proxy to make the deployment easier for those who are incapable of running INTANG (using OSes other than Linux or doesn't have root privillige).
 
 Platform
 ==================
