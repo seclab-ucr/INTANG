@@ -1,11 +1,11 @@
 
 Introduction
 ==================
-INTANG is a research project for circumventing the "TCP reset attack" from the Great Firewall of China (GFW) by disrupting/desynchronizing the TCP Control Block (TCB) on the censorship devices. INTANG runs as a client-side only tool in background to protect the TCP connections from being interfered (or even monitored) by the GFW. It works on TCP/IP layers instead of application layer, thus considered more general and can help all application layer protocols to evade censorship, e.g. HTTP, DNS over TCP, OpenVPN, Tor. It can also be run on a proxy to make the deployment easier for those who are incapable of running INTANG (using OSes other than Linux or doesn't have root privillige).
+INTANG is a research project for circumventing the "TCP reset attack" from the Great Firewall of China (GFW) by disrupting/desynchronizing the TCP Control Block (TCB) on the censorship devices. INTANG runs as a client-side only tool in the background to protect TCP connections from being interfered with (or even monitored) by the GFW. It works on the TCP/IP layers instead of the application layer, making it more general and able to help all application layer protocols to evade censorship (e.g. HTTP, DNS over TCP, OpenVPN, and Tor). It can also be run on a proxy to make the deployment easier for those who are incapable of running INTANG (e.g. using OSes other than Linux, or who don't have root priviliges).
 
 Platform
 ==================
-Linux (must has netfilter supported in kernel)
+Linux (must have netfilter supported in kernel)
 
 *Tested with Ubuntu 12.04/14.04/16.04.*
 
@@ -39,10 +39,10 @@ And the binary will be located under bin folder.
 How to Run
 ==================
 1. Use `run.sh` to start the daemon. Logs are by default written to /var/log/intangd.log. If you want to test a specific strategy, use `run.sh <strategy ID>`. Strategy IDs can be checked with `run.sh -h`.
-2. Use `stop.sh` to stop the daemon. It simply send SIGINT signal to the daemon.
+2. Use `stop.sh` to stop the daemon. It simply sends a SIGINT signal to the daemon.
 
-**The daemon needs root privilege to run.**
-**If you are using Virtual Machine, you'll need to configure the networks in Bridge Mode.**
+**The daemon needs root privileges to run.**
+**If you are using a Virtual Machine, you'll need to configure the networks in Bridge Mode.**
 
 Source Code Organization
 ==================
@@ -83,11 +83,11 @@ Source Code Organization
 
 Disclaimer
 ==================
-INTANG is a research-oriented project. Anyone using it should be aware of the potential risks and responsible for his/her own actions against the censorship authority.
+INTANG is a research-oriented project. Anyone using it should be aware of the potential risks, and are responsible for their own actions against the Chinese censorship authority.
 
 Contact
 ==================
-Any questions could be direct to intang.box@gmail.com
+Any questions should be directed to intang.box@gmail.com.
 
 Paper Published
 ==================
